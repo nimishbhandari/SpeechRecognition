@@ -5,34 +5,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>PronunciationTester</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(#a8ff78, #78ffd6, #a8ff78);
+            height: 120vh;
+        }
+
+        .head {
+            background-color: black;
+            color: #fff;
+            text-align: left;
+            padding: 30px 20px;
+            font-size: 30px;
+            font-weight: 200;
+            letter-spacing: 5px;
+            width: 100vw;
+        }
+
+        .highlight {
+            color: #0ae941;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            width: fit-content;
+            padding: 40px;
+            margin: 20px;
+        }
+
+        .intro {
+            font-size: 22px;
+            letter-spacing: 0.7px;
+            color: #222222;
+            font-weight: 1000;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .content {
+            margin-top: 25px;
+        }
+
+        .content>p {
+            padding: 10px;
+            margin: 10px;
+            border: solid;
+            width: fit-content;
+            font-size: 19px;
+        }
+
+        .content>button {
+            padding: 15px;
+            color: #fff;
+            background-color: rgb(24, 190, 24);
+            text-align: center;
+            border-radius: 15px;
+            border: none;
+            font-size: 17px;
+        }
+    </style>
 </head>
 
 <body>
-    <button class="talk">Talk</button>
-    <h3 class="content"></h3>
-    <p class="confidence"></p>
+    <div class="head">
+        Speech<span class="highlight">Recognition</span>
+    </div>
+
+    <div class="container">
+        <div class="intro">
+            Press the test button and speak a sentence or a phrase.
+        </div>
+
+        <div class="content">
+            <button class="talk">Start Test!</button>
+            <p class="content0"></p>
+            <p class="content1"></p>
+            <p class="content2"></p>
+            <p class="content3"></p>
+        </div>
+    </div>
 
     <script>
-        const btn = document.querySelector('.talk');
-        const content = document.querySelector('.content');
-        const confidence = document.querySelector('.confidence')
+        let btn = document.querySelector('.talk');
+        let count = 0;
+        let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = new SpeechRecognition();
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-
-        recognition.onstart = function () {
+        recognition.onstart = function (event) {
             console.log("speak now.....");
         }
 
         recognition.onresult = function (event) {
+            count++;
             console.log(event);
+            result = event.results[0][0];
 
-            content.textContent = event.results[event.resultIndex][0].transcript;
-            confidence.textContent = "confidence level...: " + event.results[event.resultIndex][0].confidence;
+            for (i = count - 1; i < count; i++) {
+                btn.innerHTML = "Start Test!";
+                let content = document.querySelector('.content' + i);
+                content.innerHTML =
+                    "<b>Result: </b>" + result
+                    .transcript + "<br><b>Confidence in speech : </b>" + Math.floor(result.confidence * 100) +
+                    "/100";
+            }
+
+            if (count == 4) {
+                count = 0;
+            }
+
+            console.log(count);
         }
 
         btn.addEventListener('click', () => {
+            btn.innerHTML = "Speak Now!";
             recognition.start();
         })
     </script>
